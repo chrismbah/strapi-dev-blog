@@ -5,8 +5,9 @@ import { FaArrowLeft } from "react-icons/fa";
 import slugify from "react-slugify";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import Image from "next/image";
-import { makePost, api } from "@/lib/api";
-import { toast } from "react-hot-toast"; // Importing Toaster and toast
+import { createPost, uploadImage } from "@/lib/api";
+import { toast } from "react-hot-toast";
+
 const WritePost = () => {
   const [markdownContent, setMarkdownContent] = useState("");
   const [title, setTitle] = useState("");
@@ -32,27 +33,29 @@ const WritePost = () => {
     setError(null);
 
     try {
-      let imageId = null;
+      // Create slug from the title
+      const postSlug = slugify(title);
+      // Create the post initially without the image
+      const postData = {
+        title,
+        description,
+        slug: postSlug,
+        content: markdownContent,
+      };
+
+      // Step 1: Create the blog post without the cover image
+      const postResponse = await createPost(postData);
+      const postId = postResponse.id;
+      console.log(postId)
+
+      // Step 2: Upload cover image (if provided) and associate with blog post
       if (coverImage) {
-        const imageFormData = new FormData();
-        imageFormData.append("files", coverImage);
-        const uploadResponse = await api.post("/upload", imageFormData);
-        // imageId = uploadResponse.data[0].id;
+        const uploadedImage = await uploadImage(coverImage, postId);
+        console.log("Image uploaded:", uploadedImage);
       }
-      // const postSlug = slugify(title);
-      // const formData = new FormData();
 
-      // Wrap everything inside a "data" field
-      // formData.append("data[title]", title);
-      // formData.append("data[description]", description);
-      // formData.append("data[slug]", postSlug);
-      // formData.append("data[content]", markdownContent);
-      // if (coverImage) formData.append("data[cover]", imageId);
-
-      // // Make the post request
-      // const postResponse = await makePost(formData);
-      // console.log(postResponse);
-      // router.push(`/blogs/${slugify(title)}`);
+      // Redirect after successful post creation
+      router.push(`/blogs/${postSlug}`);
       toast.success("Post created successfully");
     } catch (error) {
       console.error("Failed to create post:", error);
@@ -62,40 +65,6 @@ const WritePost = () => {
       setIsLoading(false);
     }
   };
-  // const handleSubmit = async () => {
-  //   setIsLoading(true);
-  //   setError(null);
-
-  //   try {
-  //     let imageId = null;
-  //     if (coverImage) {
-  //       const imageFormData = new FormData();
-  //       imageFormData.append('files', coverImage);
-  //       const uploadResponse = await api.post("/upload", imageFormData);
-  //       imageId = uploadResponse.data[0].id;
-  //     }
-
-  //     const postSlug = slugify(title);
-  //     const postData = {
-  //       title,
-  //       description,
-  //       slug: postSlug,
-  //       content: markdownContent,
-  //       ...(imageId && { cover: imageId }),
-  //     };
-
-  //     const postResponse = await makePost(postData);
-  //     console.log(postResponse);
-  //     router.push(`/blogs/${postSlug}`);
-  //     toast.success("Post created successfully");
-  //   } catch (error) {
-  //     console.error("Failed to create post:", error);
-  //     setError("Failed to create post. Please try again.");
-  //     toast.error("Failed to create post. Please try again.");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   return (
     <div className="max-w-screen-md mx-auto p-4">
@@ -106,9 +75,7 @@ const WritePost = () => {
         <FaArrowLeft /> <span>Back</span>
       </button>
 
-      <h1 className="text-xl font-jet-brains font-bold mb-4 text-gray-100">
-        Create New Post
-      </h1>
+      <h1 className="text-xl font-bold mb-4 text-gray-100 font-jet-brains">Create New Post</h1>
 
       {error && (
         <div className="mb-4 p-3 bg-red-600 text-white rounded-md">{error}</div>
@@ -120,7 +87,7 @@ const WritePost = () => {
           placeholder="Enter a Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 text-3xl tracking-wide font-jet-brains font-semibold bg-[#161b22] text-gray-100 border-b border-gray-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
+          className="w-full p-2 font-jet-brains text-3xl font-semibold bg-[#161b22] text-gray-100 border-b border-gray-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
         />
       </div>
 
@@ -129,11 +96,11 @@ const WritePost = () => {
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 bg-[#161b22] font-jet-brains font-semibold text-gray-100 border-b border-gray-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
+          className="w-full p-2 font-jet-brains bg-[#161b22] font-semibold text-gray-100 border-b border-gray-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
         />
       </div>
 
-      <div className="mb-6 font-jet-brains">
+      <div className="mb-6">
         <input
           type="file"
           accept="image/*"
@@ -154,7 +121,6 @@ const WritePost = () => {
       </div>
 
       <div className="mb-6">
-        <div className="wmde-markdown-var"></div>
         <MarkdownEditor
           value={markdownContent}
           height="200px"
@@ -162,6 +128,7 @@ const WritePost = () => {
           className="bg-[#161b22] text-gray-100"
         />
       </div>
+
       <button
         onClick={handleSubmit}
         disabled={isLoading}

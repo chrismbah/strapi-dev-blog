@@ -80,7 +80,7 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
       )} */}
 
       {post.cover && (
-        <div className="relative h-60 w-full my-4">
+        <div className="relative h-72 w-full my-4">
           <img
             src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${post.cover.url}`}
             alt={post.title}

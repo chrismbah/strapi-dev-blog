@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { UserBlogPostData } from "./types";
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_STRAPI_API_URL ?? "http://localhost:1337/api",
 });
@@ -75,29 +75,31 @@ export const getAllCategories = async () => {
   }
 };
 
-// Upload image
-export const uploadImage = async (image: File) => {
+// Upload image with correct structure for referencing in the blog
+export const uploadImage = async (image: File, refId: number) => {
   try {
     const formData = new FormData();
     formData.append("files", image);
+    formData.append("ref", "api::blog.blog"); // ref: Strapi content-type name
+    formData.append("refId", refId.toString()); // refId: Blog post ID
+    formData.append("field", "cover"); // field: Image field name in the blog
+
     const response = await api.post("/upload", formData);
-    const imageId = response.data[0].id;
-    return imageId;
+    const uploadedImage = response.data[0];
+    return uploadedImage; // Return full image metadata
   } catch (err) {
-    console.log(err);
+    console.error("Error uploading image:", err);
     throw err;
   }
 };
 
-// Post a blog
-export const makePost = async (formData: FormData) => {
+// Create a blog post and handle all fields
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createPost = async (postData: UserBlogPostData) => {
   try {
-    const response = await api.post("/blogs", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
+    const reqData = { data: {...postData} }
+    const response = await api.post("/blogs",reqData);
+    return response.data.data;
   } catch (error) {
     console.error("Error creating post:", error);
     throw new Error("Failed to create post");
