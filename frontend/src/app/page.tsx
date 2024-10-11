@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { useSearchParams } from "next/navigation"; 
 import Link from "next/link";
 import { getAllPosts } from "../lib/api";
 import { BlogPost } from "@/lib/types";
 import Loader from "@/components/Loader";
-import Pagination from "@/components/Pagination"; // Import the Pagination component
+import Pagination from "@/components/Pagination";
 
 export default function Home() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -15,7 +15,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1); // Track current page
   const [totalPages, setTotalPages] = useState(1); // Track total number of pages
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search") || ""; // Get the search query
+  const searchQuery = searchParams.get("search") ?? ""; // Get the search query
 
   useEffect(() => {
     const fetchPosts = async (page: number) => {

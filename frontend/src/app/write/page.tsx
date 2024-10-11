@@ -5,9 +5,8 @@ import { FaArrowLeft } from "react-icons/fa";
 import slugify from "react-slugify";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import Image from "next/image";
-import { makePost } from "@/lib/api";
+import { makePost, api } from "@/lib/api";
 import { toast } from "react-hot-toast"; // Importing Toaster and toast
-import { api } from "@/lib/api";
 const WritePost = () => {
   const [markdownContent, setMarkdownContent] = useState("");
   const [title, setTitle] = useState("");
@@ -36,24 +35,24 @@ const WritePost = () => {
       let imageId = null;
       if (coverImage) {
         const imageFormData = new FormData();
-        imageFormData.append('files', coverImage);
-        
+        imageFormData.append("files", coverImage);
         const uploadResponse = await api.post("/upload", imageFormData);
-        imageId = uploadResponse.data[0].id;
+        // imageId = uploadResponse.data[0].id;
       }
+      // const postSlug = slugify(title);
+      // const formData = new FormData();
 
-      const postSlug = slugify(title);
-      const postData = {
-        title,
-        description,
-        slug: postSlug,
-        content: markdownContent,
-        ...(imageId && { cover: imageId }),
-      };
+      // Wrap everything inside a "data" field
+      // formData.append("data[title]", title);
+      // formData.append("data[description]", description);
+      // formData.append("data[slug]", postSlug);
+      // formData.append("data[content]", markdownContent);
+      // if (coverImage) formData.append("data[cover]", imageId);
 
-      const postResponse = await makePost(postData);
-      console.log(postResponse);
-      router.push(`/blogs/${postSlug}`);
+      // // Make the post request
+      // const postResponse = await makePost(formData);
+      // console.log(postResponse);
+      // router.push(`/blogs/${slugify(title)}`);
       toast.success("Post created successfully");
     } catch (error) {
       console.error("Failed to create post:", error);
@@ -63,6 +62,40 @@ const WritePost = () => {
       setIsLoading(false);
     }
   };
+  // const handleSubmit = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     let imageId = null;
+  //     if (coverImage) {
+  //       const imageFormData = new FormData();
+  //       imageFormData.append('files', coverImage);
+  //       const uploadResponse = await api.post("/upload", imageFormData);
+  //       imageId = uploadResponse.data[0].id;
+  //     }
+
+  //     const postSlug = slugify(title);
+  //     const postData = {
+  //       title,
+  //       description,
+  //       slug: postSlug,
+  //       content: markdownContent,
+  //       ...(imageId && { cover: imageId }),
+  //     };
+
+  //     const postResponse = await makePost(postData);
+  //     console.log(postResponse);
+  //     router.push(`/blogs/${postSlug}`);
+  //     toast.success("Post created successfully");
+  //   } catch (error) {
+  //     console.error("Failed to create post:", error);
+  //     setError("Failed to create post. Please try again.");
+  //     toast.error("Failed to create post. Please try again.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="max-w-screen-md mx-auto p-4">

@@ -1,10 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: process.env.NEXT_PUBLIC_STRAPI_API_URL ?? "http://localhost:1337/api",
 });
 
 // Get all posts with optional search query and pagination (4 posts per page)
@@ -13,6 +10,7 @@ export const getAllPosts = async (
   page: number = 1,
   searchQuery: string = ""
 ) => {
+  console.log(`Fetching from: ${process.env.NEXT_PUBLIC_STRAPI_URL}`);
   try {
     // If search query exists, filter posts based on title
     const searchFilter = searchQuery
@@ -21,7 +19,6 @@ export const getAllPosts = async (
     const response = await api.get(
       `/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}${searchFilter}`
     );
-
     return {
       posts: response.data.data,
       pagination: response.data.meta.pagination, // Include pagination data
