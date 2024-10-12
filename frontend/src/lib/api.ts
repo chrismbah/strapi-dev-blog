@@ -1,7 +1,7 @@
 import axios from "axios";
 import { UserBlogPostData } from "./types";
 export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_STRAPI_URL}/api`,
+  baseURL: `${process.env.NEXT_PUBLIC_STRAPI_URL}`,
 });
 
 // Get all posts with optional search query and pagination (4 posts per page)
@@ -16,7 +16,7 @@ export const getAllPosts = async (
       ? `&filters[title][$containsi]=${searchQuery}`
       : "";
     const response = await api.get(
-      `/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${process.env.NEXT_PUBLIC_PAGE_LIMIT}${searchFilter}`
+      `api/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${process.env.NEXT_PUBLIC_PAGE_LIMIT}${searchFilter}`
     );
     return {
       posts: response.data.data,
@@ -28,12 +28,12 @@ export const getAllPosts = async (
   }
 };
 
-// Get document ID by slug
-export const getDocumentIdBySlug = async (slug: string) => {
+// Get post by slug
+export const getPostBySlug = async (slug: string) => {
   try {
-    const response = await api.get(`/blogs?filters[slug]=${slug}&populate=*`);
+    const response = await api.get(`api/blogs?filters[slug]=${slug}&populate=*`);
     if (response.data.data.length > 0) {
-      return response.data.data[0].documentId; // Return the post ID
+      return response.data.data[0]; // Return the post data
     }
     throw new Error("Post not found.");
   } catch (error) {
@@ -42,31 +42,10 @@ export const getDocumentIdBySlug = async (slug: string) => {
   }
 };
 
-// Get a post by document ID
-export const getPostById = async (id: string) => {
-  try {
-    const response = await api.get(`/blogs/${id}?populate=*`);
-    return response.data.data; // Return the post directly
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    throw new Error("Server error");
-  }
-};
-export const getPostBySlug = async (slug: string) => {
-  try {
-    const response = await api.get(
-      `/api/blogs?filters[slug][$eq]=${slug}&populate=*`
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching post with slug ${slug}:`, error);
-    throw error;
-  }
-};
 
 export const getAllCategories = async () => {
   try {
-    const response = await api.get("/categories");
+    const response = await api.get("api/categories");
     return response.data.data; // Return all categories
   } catch (error) {
     console.error("Error fetching post:", error);
@@ -83,7 +62,7 @@ export const uploadImage = async (image: File, refId: number) => {
     formData.append("refId", refId.toString()); // refId: Blog post ID
     formData.append("field", "cover"); // field: Image field name in the blog
 
-    const response = await api.post("/upload", formData);
+    const response = await api.post("api/upload", formData);
     const uploadedImage = response.data[0];
     return uploadedImage; // Return full image metadata
   } catch (err) {
@@ -97,7 +76,7 @@ export const uploadImage = async (image: File, refId: number) => {
 export const createPost = async (postData: UserBlogPostData) => {
   try {
     const reqData = { data: {...postData} }
-    const response = await api.post("/blogs",reqData);
+    const response = await api.post("api/blogs",reqData);
     return response.data.data;
   } catch (error) {
     console.error("Error creating post:", error);

@@ -583,22 +583,20 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
-  collectionName: 'globals';
+export interface ApiSeoSeo extends Struct.SingleTypeSchema {
+  collectionName: 'seos';
   info: {
-    singularName: 'global';
-    pluralName: 'globals';
-    displayName: 'Global';
-    description: 'Define global settings';
+    singularName: 'seo';
+    pluralName: 'seos';
+    displayName: 'SEO';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
-    siteName: Schema.Attribute.String & Schema.Attribute.Required;
-    favicon: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    siteTitle: Schema.Attribute.String & Schema.Attribute.Required;
     siteDescription: Schema.Attribute.Text & Schema.Attribute.Required;
-    defaultSeo: Schema.Attribute.Component<'shared.seo', false>;
+    favicon: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -607,7 +605,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::global.global'>;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::seo.seo'>;
   };
 }
 
@@ -989,7 +987,7 @@ declare module '@strapi/strapi' {
       'api::author.author': ApiAuthorAuthor;
       'api::blog.blog': ApiBlogBlog;
       'api::category.category': ApiCategoryCategory;
-      'api::global.global': ApiGlobalGlobal;
+      'api::seo.seo': ApiSeoSeo;
       'admin::permission': AdminPermission;
       'admin::user': AdminUser;
       'admin::role': AdminRole;

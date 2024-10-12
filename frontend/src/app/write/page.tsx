@@ -46,7 +46,7 @@ const WritePost = () => {
       // Step 1: Create the blog post without the cover image
       const postResponse = await createPost(postData);
       const postId = postResponse.id;
-      console.log(postId)
+      console.log(postId);
 
       // Step 2: Upload cover image (if provided) and associate with blog post
       if (coverImage) {
@@ -75,7 +75,9 @@ const WritePost = () => {
         <FaArrowLeft /> <span>Back</span>
       </button>
 
-      <h1 className="text-xl font-bold mb-4 text-gray-100 font-jet-brains">Create New Post</h1>
+      <h1 className="text-xl font-bold mb-4 text-gray-100 font-jet-brains">
+        Create New Post
+      </h1>
 
       {error && (
         <div className="mb-4 p-3 bg-red-600 text-white rounded-md">{error}</div>

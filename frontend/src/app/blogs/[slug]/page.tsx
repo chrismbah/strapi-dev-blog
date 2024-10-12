@@ -2,32 +2,31 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState } from "react";
-import { getPostById, getDocumentIdBySlug } from "../../../lib/api"; // Import your API function
+import { getPostBySlug } from "../../../lib/api"; // Import your API function
 import { useRouter } from "next/navigation";
 import { BlogPost } from "@/lib/types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dracula } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { materialDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { FaClipboard } from "react-icons/fa"; // Import your chosen icon
 import Loader from "@/components/Loader";
-import {toast} from "react-hot-toast"
+import { handleCopyCode } from "@/lib/utils";
+
 const BlogPostPage = ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPost = async () => {
       if (slug) {
         try {
-          // First fetch the documentId using the slug
-          const documentId = await getDocumentIdBySlug(slug);
-          // Now fetch the post using the documentId
-          const fetchedPost = await getPostById(documentId);
+          // Fetch the post using the slug
+          const fetchedPost = await getPostBySlug(slug);
           setPost(fetchedPost);
         } catch (err) {
           setError("Error fetching post.");
@@ -41,24 +40,15 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
     fetchPost();
   }, [slug]);
 
-  const handleCopyCode = async (code: string) => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success("Code copied to clipboard!"); // Show toast on error
-    } catch (err) {
-      console.error("Failed to copy code: ", err);
-    }
-  };
-
   if (loading)
     return (
       <div className="max-w-screen-md mx-auto flex items-center justify-center">
         <Loader />
       </div>
     );
-  if (error) return <p className="max-w-screen-md mx-auto">Error: {error}</p>;
-  if (!post) return <p className="max-w-screen-md mx-auto">No post found.</p>;
-
+  if (error) return <p>Error: {error}</p>;
+  if (!post) return <p>No post found.</p>;
+  console.log(post);
   return (
     <div className="max-w-screen-md mx-auto p-4">
       <h1 className="text-4xl leading-[60px] capitalize text-center font-bold text-purple-800 font-jet-brains">
@@ -66,7 +56,7 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
       </h1>
 
       {/* Categories Section */}
-      {/* {post.categories && post.categories.length > 0 && (
+      {post.categories && post.categories.length > 0 && (
         <div className="flex flex-wrap justify-center space-x-2 my-4">
           {post.categories.map(({ name, documentId }) => (
             <span
@@ -77,7 +67,7 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
             </span>
           ))}
         </div>
-      )} */}
+      )}
 
       {post.cover && (
         <div className="relative h-72 w-full my-4">
@@ -110,7 +100,7 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
                   <FaClipboard />
                 </button>
                 <SyntaxHighlighter
-                  style={dracula}
+                  style={materialDark}
                   PreTag="div"
                   language={match[1]}
                   {...props}
@@ -128,9 +118,12 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
       >
         {post.content}
       </Markdown>
-        <button onClick={() => router.back()} className="text-purple-800 mt-4 inline-block hover:underline">
-          Back to Blogs
-        </button>
+      <button
+        onClick={() => router.back()}
+        className="text-purple-800 mt-4 inline-block hover:underline"
+      >
+        Back to Blogs
+      </button>
     </div>
   );
 };

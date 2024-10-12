@@ -27,7 +27,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <Link href="/">
             <h1 className="font-bold text-xl font-jet-brains text-white">
-              DEV_BLOG
+              DEV.BLOG
             </h1>
           </Link>
           <button
