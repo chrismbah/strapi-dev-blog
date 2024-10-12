@@ -1,11 +1,10 @@
 import axios from "axios";
 import { UserBlogPostData } from "./types";
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_STRAPI_API_URL ?? "http://localhost:1337/api",
+  baseURL: `${process.env.NEXT_PUBLIC_STRAPI_URL}/api`,
 });
 
 // Get all posts with optional search query and pagination (4 posts per page)
-const PAGE_SIZE = 4;
 export const getAllPosts = async (
   page: number = 1,
   searchQuery: string = ""
@@ -17,7 +16,7 @@ export const getAllPosts = async (
       ? `&filters[title][$containsi]=${searchQuery}`
       : "";
     const response = await api.get(
-      `/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}${searchFilter}`
+      `/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${process.env.NEXT_PUBLIC_PAGE_LIMIT}${searchFilter}`
     );
     return {
       posts: response.data.data,
