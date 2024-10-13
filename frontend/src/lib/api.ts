@@ -1,7 +1,11 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { UserBlogPostData } from "./types";
-export const api = axios.create({
+
+export const api: AxiosInstance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_STRAPI_URL}`,
+  headers: {
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_TOKEN}`,
+  },
 });
 
 // Get all posts with optional search query and pagination (4 posts per page)
@@ -9,7 +13,6 @@ export const getAllPosts = async (
   page: number = 1,
   searchQuery: string = ""
 ) => {
-  console.log(`Fetching from: ${process.env.NEXT_PUBLIC_STRAPI_URL}`);
   try {
     // If search query exists, filter posts based on title
     const searchFilter = searchQuery
@@ -31,18 +34,20 @@ export const getAllPosts = async (
 // Get post by slug
 export const getPostBySlug = async (slug: string) => {
   try {
-    const response = await api.get(`api/blogs?filters[slug]=${slug}&populate=*`);
+    const response = await api.get(
+      `api/blogs?filters[slug]=${slug}&populate=*`
+    );
     if (response.data.data.length > 0) {
       return response.data.data[0]; // Return the post data
     }
     throw new Error("Post not found.");
   } catch (error) {
-    console.error("Error fetching document ID:", error);
+    console.error("Error fetching post:", error);
     throw new Error("Server error");
   }
 };
 
-
+// Get all posts categories
 export const getAllCategories = async () => {
   try {
     const response = await api.get("api/categories");
@@ -75,11 +80,22 @@ export const uploadImage = async (image: File, refId: number) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createPost = async (postData: UserBlogPostData) => {
   try {
-    const reqData = { data: {...postData} }
-    const response = await api.post("api/blogs",reqData);
+    const reqData = { data: { ...postData } };
+    const response = await api.post("api/blogs", reqData);
     return response.data.data;
   } catch (error) {
     console.error("Error creating post:", error);
     throw new Error("Failed to create post");
+  }
+};
+
+// Get SEO data
+export const getSEO = async () => {
+  try {
+    const response = await api.get("api/seo");
+    return response.data.data;
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    throw new Error("Failed to fetch data");
   }
 };

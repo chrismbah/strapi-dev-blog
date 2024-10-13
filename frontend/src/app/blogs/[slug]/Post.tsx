@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useState } from "react";
-import { getPostBySlug } from "../../../lib/api"; // Import your API function
-import { useRouter } from "next/navigation";
 import { BlogPost } from "@/lib/types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -11,34 +8,18 @@ import rehypeRaw from "rehype-raw";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { FaClipboard } from "react-icons/fa"; // Import your chosen icon
-import Loader from "@/components/Loader";
 import { handleCopyCode } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
-const BlogPostPage = ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+interface PostProps {
+  post: BlogPost | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const Post = ({ post, loading, error }: PostProps) => {
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      if (slug) {
-        try {
-          // Fetch the post using the slug
-          const fetchedPost = await getPostBySlug(slug);
-          setPost(fetchedPost);
-        } catch (err) {
-          setError("Error fetching post.");
-          console.log(err);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchPost();
-  }, [slug]);
 
   if (loading)
     return (
@@ -46,23 +27,20 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
         <Loader />
       </div>
     );
-  if (error) return <p className="max-w-screen-md mx-auto">Error: {error}</p>;
-  if (!post) return <p className="max-w-screen-md mx-auto">No post found.</p>;
-  console.log(post);
+
+  if (error) return <p>Error: {error}</p>;
+
+  if (!post) return <p>No post found.</p>;
+
   return (
     <div className="max-w-screen-md mx-auto p-4">
       <h1 className="text-4xl leading-[60px] capitalize text-center font-bold text-purple-800 font-jet-brains">
         {post.title}
       </h1>
-
-      {/* Categories Section */}
       {post.categories && post.categories.length > 0 && (
         <div className="flex flex-wrap space-x-2 my-4">
           {post.categories.map(({ name, documentId }) => (
-            <span
-              key={documentId}
-              className="border border-purple-900 font-medium px-2 py-2 text-sm"
-            >
+            <span key={documentId} className="bg-purple-900 font-medium px-2 py-2 text-sm">
               {name}
             </span>
           ))}
@@ -99,12 +77,7 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
                 >
                   <FaClipboard />
                 </button>
-                <SyntaxHighlighter
-                  style={materialDark}
-                  PreTag="div"
-                  language={match[1]}
-                  {...props}
-                >
+                <SyntaxHighlighter style={materialDark} PreTag="div" language={match[1]} {...props}>
                   {codeString}
                 </SyntaxHighlighter>
               </div>
@@ -128,4 +101,4 @@ const BlogPostPage = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default BlogPostPage;
+export default Post;

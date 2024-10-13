@@ -101,7 +101,6 @@ const WritePost = () => {
           className="w-full p-2 font-jet-brains bg-[#161b22] font-semibold text-gray-100 border-b border-gray-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
         />
       </div>
-
       <div className="mb-6">
         <input
           type="file"
@@ -133,7 +132,7 @@ const WritePost = () => {
 
       <button
         onClick={handleSubmit}
-        disabled={isLoading}
+        disabled={isLoading || (!title && !description)}
         className="bg-purple-600 text-gray-100 py-2 px-4 rounded-md hover:bg-purple-500"
       >
         {isLoading ? "Loading" : "Post"}

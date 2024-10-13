@@ -10,7 +10,6 @@ interface SEOProps {
     metaDescription: string;
     shareImage: { url: string };
   };
-  siteName: string;
 }
 
 export default function SEO({
@@ -19,12 +18,11 @@ export default function SEO({
   favicon,
   coverImage,
   defaultSeo,
-  siteName,
 }: Readonly<SEOProps>) {
   return (
     <Head>
       {/* Dynamically set the page title */}
-      <title>{title ? `${title} | ${siteName}` : defaultSeo.metaTitle}</title>
+      <title>{title ? `${title}` : defaultSeo.metaTitle}</title>
       <meta
         name="description"
         content={description ?? defaultSeo.metaDescription}
@@ -32,7 +30,7 @@ export default function SEO({
       <link
         rel="icon"
         href={coverImage ?? favicon}
-        type="image/png"
+        // type="image/png"
       />
 
       {/* Open Graph (social sharing) image */}
