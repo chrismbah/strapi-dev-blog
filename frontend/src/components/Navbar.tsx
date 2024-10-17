@@ -8,17 +8,17 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchParams = useSearchParams();
-  const pathname = usePathname(); // Get the current pathname
-  const { replace } = useRouter();
+  const pathname = usePathname(); // Get the current route path
+  const { replace } = useRouter(); // Next js function to replace routes
 
   // Handle search query submission
   const handleSearchSubmit = () => {
     const params = new URLSearchParams(searchParams);
     if (searchQuery) params.set("search", searchQuery);
     else params.delete("search");
-    // Always route to /blogs with the search query
+    // Always routes with the search query
     replace(`/?${params.toString()}`);
-    // replace(`${pathname}?${params.toString()}`);
+    setSearchOpen(false); // Close search bar after submission
   };
 
   return (
@@ -26,7 +26,7 @@ const Navbar = () => {
       <nav className="flex justify-between items-center mb-2 p-4 ">
         <div className="flex items-center gap-4">
           <Link href="/">
-            <h1 className="font-bold text-xl font-jet-brains text-white">
+            <h1 className="font-bold text-xl text-purple-600 font-jet-brains">
               DEV.BLOG
             </h1>
           </Link>

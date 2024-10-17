@@ -44,7 +44,6 @@ export default function Home() {
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set("page", newPage.toString());
     router.push(`?${newParams.toString()}`);
-    
     setLoading(true); // Show loader while fetching
   };
 

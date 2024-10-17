@@ -18,7 +18,7 @@ export interface Category {
   description: string; // Optional description
 }
 
-// export Interface for Blog Post Data
+
 export interface BlogPost {
   id: number;
   title: string;
@@ -26,11 +26,9 @@ export interface BlogPost {
   description: string;
   content: string; // rich markdown text
   createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
   cover: ImageData; // Assuming this is the structure of your featured image
   author: Author; // The author of the blog post
   categories: Category[]; // An array of categories associated with the post
-  documentId: string;
 }
 
 export interface UserBlogPostData {

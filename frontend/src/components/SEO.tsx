@@ -1,15 +1,10 @@
 import Head from "next/head";
-
+import { metadata } from "@/app/layout";
 interface SEOProps {
   title: string;
   description: string;
   favicon: string;
   coverImage?: string;
-  defaultSeo: {
-    metaTitle: string;
-    metaDescription: string;
-    shareImage: { url: string };
-  };
 }
 
 export default function SEO({
@@ -17,33 +12,29 @@ export default function SEO({
   description,
   favicon,
   coverImage,
-  defaultSeo,
 }: Readonly<SEOProps>) {
   return (
     <Head>
-      {/* Dynamically set the page title */}
-      <title>{title ? `${title}` : defaultSeo.metaTitle}</title>
-      <meta
-        name="description"
-        content={description ?? defaultSeo.metaDescription}
-      />
+      <title>
+        {title ? `${title}` : `${metadata.title}`}
+      </title>
+      <meta name="description" content={description ?? metadata.description} />
       <link
         rel="icon"
         href={coverImage ?? favicon}
         // type="image/png"
       />
-
       {/* Open Graph (social sharing) image */}
-      <meta
+      {/* <meta
         property="og:image"
-        content={coverImage ?? defaultSeo.shareImage.url}
-      />
+        content={coverImage ?? metadata.icons?.icon}
+      /> */}
 
       {/* Additional meta tags for SEO */}
-      <meta property="og:title" content={title ?? defaultSeo.metaTitle} />
+      <meta property="og:title" content={title ?? metadata.title} />
       <meta
         property="og:description"
-        content={description ?? defaultSeo.metaDescription}
+        content={description ?? metadata.description}
       />
       <meta property="og:type" content="article" />
     </Head>

@@ -31,7 +31,6 @@ const WritePost = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);
-
     try {
       // Create slug from the title
       const postSlug = slugify(title);
@@ -78,7 +77,7 @@ const WritePost = () => {
       <h1 className="text-xl font-bold mb-4 text-gray-100 font-jet-brains">
         Create New Post
       </h1>
-
+      {/* Render a message if there is an error */}
       {error && (
         <div className="mb-4 p-3 bg-red-600 text-white rounded-md">{error}</div>
       )}
@@ -92,7 +91,6 @@ const WritePost = () => {
           className="w-full p-2 font-jet-brains text-3xl font-semibold bg-[#161b22] text-gray-100 border-b border-gray-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
         />
       </div>
-
       <div className="mb-4">
         <textarea
           placeholder="Description"

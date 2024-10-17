@@ -3,12 +3,8 @@ import { UserBlogPostData } from "./types";
 
 export const api: AxiosInstance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_STRAPI_URL}`,
-  headers: {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_TOKEN}`,
-  },
 });
 
-// Get all posts with optional search query and pagination (4 posts per page)
 export const getAllPosts = async (
   page: number = 1,
   searchQuery: string = ""
@@ -18,6 +14,7 @@ export const getAllPosts = async (
     const searchFilter = searchQuery
       ? `&filters[title][$containsi]=${searchQuery}`
       : "";
+    // Fetch posts with pagination and populate the required fields (cover image, author, categories)
     const response = await api.get(
       `api/blogs?populate=*&pagination[page]=${page}&pagination[pageSize]=${process.env.NEXT_PUBLIC_PAGE_LIMIT}${searchFilter}`
     );
@@ -77,7 +74,6 @@ export const uploadImage = async (image: File, refId: number) => {
 };
 
 // Create a blog post and handle all fields
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createPost = async (postData: UserBlogPostData) => {
   try {
     const reqData = { data: { ...postData } };

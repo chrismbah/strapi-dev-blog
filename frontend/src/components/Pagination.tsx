@@ -1,5 +1,5 @@
 import React from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Import the arrow icons
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Import arrow icons from react-icons
 
 interface PaginationProps {
   currentPage: number;

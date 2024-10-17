@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getPostBySlug } from "@/lib/api"; // Adjust the path as needed
 
-export const generateMetadata = async (params: { slug: string }): Promise<Metadata> => {
+export const generateSEO = async (params: { slug: string }): Promise<Metadata> => {
   const post = await getPostBySlug(params.slug);
   if (!post) {
     return {
